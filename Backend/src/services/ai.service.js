@@ -107,10 +107,10 @@ async function generatePdfFromHtml(htmlContent) {
     return await page.pdf({
       format: "A4",
       margin: {
-        top: "20mm",
-        bottom: "20mm",
-        left: "15mm",
-        right: "15mm",
+        top: "8mm",
+        bottom: "8mm",
+        left: "10mm",
+        right: "10mm",
       },
     });
   } finally {
@@ -123,15 +123,31 @@ async function generateResumePdf({ resume, selfDescription, jobDescription }) {
     html: z.string(),
   });
 
-  const prompt = `Generate an ATS-friendly, professional resume using the following information:
+  const prompt = `Generate a professional, ATS-friendly resume tailored to the job description.
 
-Resume: ${resume}
-Self Description: ${selfDescription}
-Job Description: ${jobDescription}
+Resume:
+${resume}
 
-Return a JSON object containing one field named "html".
-The html field must contain the complete HTML content of the tailored resume.
-Keep the design simple, professional, and suitable for a PDF.`;
+Self Description:
+${selfDescription}
+
+Job Description:
+${jobDescription}
+
+Requirements:
+- Target 1 A4 page; use 2 pages only if necessary.
+- Never exceed 2 A4 pages.
+- Use a clean, single-column, ATS-friendly layout.
+- Use standard headings: Professional Summary, Technical Skills,
+  Professional Experience, Education, and relevant Projects or Certifications.
+- Keep bullet points concise and remove repetitive content.
+- Use Arial or a similar readable font, approximately 10pt body text.
+- Use compact spacing and 10-12mm page margins.
+- Keep education entries together and avoid unnecessary page breaks.
+- Do not use tables, multiple columns, icons, or graphics.
+- Do not invent candidate information or achievements.
+- Return a complete HTML document with embedded CSS.
+- Return JSON containing only the "html" field.`;
 
   const response = await ai.models.generateContent({
     model: "gemini-3-flash-preview",
@@ -142,7 +158,9 @@ Keep the design simple, professional, and suitable for a PDF.`;
     },
   });
 
-  const jsonContent = JSON.parse(response.text);
+  const jsonContent = resumePdfSchema.parse(
+    JSON.parse(response.text)
+  );
 
   return generatePdfFromHtml(jsonContent.html);
 }
