@@ -14,7 +14,7 @@ export const generateInterviewReport = async ({
   resumeFile,
 }) => {
   const formData = new FormData();
-  
+
   formData.append("jobDescription", jobDescription);
   formData.append("selfDescription", selfDescription);
   formData.append("resume", resumeFile);
@@ -24,7 +24,8 @@ export const generateInterviewReport = async ({
       "Content-Type": "multipart/form-data",
     },
   });
-return response.data;};
+  return response.data;
+};
 
 /**
  * @description Service to get interview report by interviewId.
