@@ -95,7 +95,12 @@ IMPORTANT:
 }
 
 async function generatePdfFromHtml(htmlContent) {
-  const browser = await puppeteer.launch();
+  const browser = await puppeteer.launch({
+    executablePath:
+      "/opt/render/.cache/puppeteer/chrome/linux-155.0.8059.79/chrome-linux64/chrome",
+    headless: true,
+    args: ["--no-sandbox", "--disable-setuid-sandbox"],
+  });
 
   try {
     const page = await browser.newPage();
